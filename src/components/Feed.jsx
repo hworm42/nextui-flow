@@ -26,7 +26,7 @@ const Feed = () => {
         <Text>No tweets available.</Text>
       ) : (
         tweets.map((tweet) => (
-          <Card key={tweet._id} style={{ marginBottom: '1rem' }}>
+          <Card key={tweet.id} style={{ marginBottom: '1rem' }}>
             <Card.Body>
               <Text>{tweet.content}</Text>
             </Card.Body>

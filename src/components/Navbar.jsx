@@ -16,7 +16,7 @@ const Navbar = ({ toggleTheme }) => {
   }, [toggleTheme]);
 
   return (
-    <nav style={{ display: 'flex', flexDirection: 'column', padding: '1rem', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderRight: '1px solid rgba(255, 255, 255, 0.2)', width: '200px' }}>
+    <nav style={{ display: 'flex', flexDirection: 'column', padding: '1rem', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderRight: '1px solid rgba(255, 255, 255, 0.2)', width: '200px', height: '100vh' }}>
       <div style={{ marginBottom: '2rem' }}>
         <Text h3>Twitter Clone</Text>
       </div>

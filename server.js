@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import logger from './src/utils/logger';
 import db from './db.js';
-import { ObjectId } from 'mongodb';
 
 const app = express();
 const port = 3000;
@@ -48,15 +47,9 @@ app.post('/api/register', async (req, res) => {
   const created_at = new Date().toISOString();
 
   try {
-    const result = await db.collection('users').insertOne({
-      username,
-      email,
-      password_hash: password,
-      created_at,
-      role,
-    });
+    const result = await db.run('INSERT INTO users (username, email, password_hash, created_at, role) VALUES (?, ?, ?, ?, ?)', username, email, password, created_at, role);
     logger.info('User registered successfully');
-    res.json({ message: 'User registered successfully', userId: result.insertedId });
+    res.json({ message: 'User registered successfully', userId: result.lastID });
   } catch (err) {
     logger.error(`Registration error: ${err.message}`);
     res.status(400).json({ error: err.message });
@@ -68,7 +61,7 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await db.collection('users').findOne({ email, password_hash: password });
+    const user = await db.get('SELECT * FROM users WHERE email = ? AND password_hash = ?', email, password);
     if (user) {
       req.session.user = user;
       logger.info('Login successful');
@@ -86,7 +79,7 @@ app.post('/api/login', async (req, res) => {
 // API endpoint to get users (protected)
 app.get('/users', authMiddleware, async (req, res) => {
   try {
-    const users = await db.collection('users').find({}, { projection: { _id: 0, username: 1, email: 1, created_at: 1, role: 1 } }).toArray();
+    const users = await db.all('SELECT username, email, created_at, role FROM users');
     logger.info('Users fetched successfully');
     res.json({ message: 'success', data: users });
   } catch (err) {
@@ -100,8 +93,8 @@ app.delete('/users/:id', adminMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await db.collection('users').deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 1) {
+    const result = await db.run('DELETE FROM users WHERE id = ?', id);
+    if (result.changes === 1) {
       logger.info('User deleted successfully');
       res.json({ message: 'User deleted successfully' });
     } else {
@@ -118,8 +111,8 @@ app.delete('/tweets/:id', moderatorMiddleware, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await db.collection('tweets').deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 1) {
+    const result = await db.run('DELETE FROM tweets WHERE id = ?', id);
+    if (result.changes === 1) {
       logger.info('Tweet deleted successfully');
       res.json({ message: 'Tweet deleted successfully' });
     } else {
@@ -133,10 +126,10 @@ app.delete('/tweets/:id', moderatorMiddleware, async (req, res) => {
 
 // API endpoint to get tweets for a logged-in user
 app.get('/api/tweets', authMiddleware, async (req, res) => {
-  const userId = req.session.user._id;
+  const userId = req.session.user.id;
 
   try {
-    const tweets = await db.collection('tweets').find({ user_id: userId }).toArray();
+    const tweets = await db.all('SELECT * FROM tweets WHERE user_id = ?', userId);
     logger.info('Tweets fetched successfully');
     res.json({ message: 'success', data: tweets });
   } catch (err) {

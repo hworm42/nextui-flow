@@ -1,23 +1,36 @@
-import { MongoClient } from 'mongodb';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 
-    const uri = 'mongodb://localhost:27017';
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+let db;
 
-    let db;
+async function connectToDatabase() {
+  db = await open({
+    filename: './database.sqlite',
+    driver: sqlite3.Database
+  });
 
-    async function connectToDatabase() {
-      await client.connect();
-      db = client.db('twitter_clone');
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL,
+      email TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      role TEXT NOT NULL
+    );
 
-      // Create collections if they don't exist
-      await db.createCollection('users');
-      await db.createCollection('tweets');
-      await db.createCollection('follows');
-      await db.createCollection('likes');
-      await db.createCollection('retweets');
-      await db.createCollection('replies');
-    }
+    CREATE TABLE IF NOT EXISTS tweets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users (id)
+    );
+  `);
 
-    connectToDatabase().catch(console.error);
+  console.log('Database connected and tables created');
+}
 
-    export default db;
+connectToDatabase().catch(console.error);
+
+export default db;
