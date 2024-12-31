@@ -1,7 +1,7 @@
-import db from './db';
+import db from './db.js';
     import { faker } from '@faker-js/faker';
 
-    const insertSampleData = () => {
+    const insertSampleData = async () => {
       // Insert 100 sample users
       const users = [];
       for (let i = 0; i < 100; i++) {
@@ -10,13 +10,9 @@ import db from './db';
         const password_hash = faker.internet.password();
         const created_at = faker.date.past().toISOString();
         const role = i < 10 ? 'admin' : i < 20 ? 'moderator' : 'user';
-        users.push([username, email, password_hash, created_at, role]);
+        users.push({ username, email, password_hash, created_at, role });
       }
-      const insertUsers = db.prepare('INSERT INTO Users (username, email, password_hash, created_at, role) VALUES (?, ?, ?, ?, ?)');
-      db.run('BEGIN TRANSACTION');
-      users.forEach(user => insertUsers.run(user));
-      db.run('COMMIT');
-      insertUsers.finalize();
+      await db.collection('users').insertMany(users);
 
       // Insert 100 sample tweets
       const tweets = [];
@@ -24,13 +20,9 @@ import db from './db';
         const user_id = i + 1;
         const content = faker.lorem.sentence();
         const created_at = faker.date.past().toISOString();
-        tweets.push([user_id, content, created_at]);
+        tweets.push({ user_id, content, created_at });
       }
-      const insertTweets = db.prepare('INSERT INTO Tweets (user_id, content, created_at) VALUES (?, ?, ?)');
-      db.run('BEGIN TRANSACTION');
-      tweets.forEach(tweet => insertTweets.run(tweet));
-      db.run('COMMIT');
-      insertTweets.finalize();
+      await db.collection('tweets').insertMany(tweets);
 
       // Insert 100 sample replies
       const replies = [];
@@ -39,13 +31,9 @@ import db from './db';
         const tweet_id = i + 1;
         const content = faker.lorem.sentence();
         const created_at = faker.date.past().toISOString();
-        replies.push([user_id, tweet_id, content, created_at]);
+        replies.push({ user_id, tweet_id, content, created_at });
       }
-      const insertReplies = db.prepare('INSERT INTO Replies (user_id, tweet_id, content, created_at) VALUES (?, ?, ?, ?)');
-      db.run('BEGIN TRANSACTION');
-      replies.forEach(reply => insertReplies.run(reply));
-      db.run('COMMIT');
-      insertReplies.finalize();
+      await db.collection('replies').insertMany(replies);
     };
 
-    insertSampleData();
+    insertSampleData().catch(console.error);

@@ -1,63 +1,23 @@
-import initSqlJs from 'sql.js';
+import { MongoClient } from 'mongodb';
 
-    const SQL = await initSqlJs({
-      locateFile: file => `https://sql.js.org/dist/${file}`
-    });
+    const uri = 'mongodb://localhost:27017';
+    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-    const db = new SQL.Database();
+    let db;
 
-    db.run(`CREATE TABLE Users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL,
-      email TEXT NOT NULL,
-      password_hash TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      role TEXT NOT NULL
-    )`);
+    async function connectToDatabase() {
+      await client.connect();
+      db = client.db('twitter_clone');
 
-    db.run(`CREATE TABLE Tweets (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      content TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES Users (id)
-    )`);
+      // Create collections if they don't exist
+      await db.createCollection('users');
+      await db.createCollection('tweets');
+      await db.createCollection('follows');
+      await db.createCollection('likes');
+      await db.createCollection('retweets');
+      await db.createCollection('replies');
+    }
 
-    db.run(`CREATE TABLE Follows (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      follower_id INTEGER NOT NULL,
-      followed_id INTEGER NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (follower_id) REFERENCES Users (id),
-      FOREIGN KEY (followed_id) REFERENCES Users (id)
-    )`);
-
-    db.run(`CREATE TABLE Likes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      tweet_id INTEGER NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES Users (id),
-      FOREIGN KEY (tweet_id) REFERENCES Tweets (id)
-    )`);
-
-    db.run(`CREATE TABLE Retweets (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      tweet_id INTEGER NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES Users (id),
-      FOREIGN KEY (tweet_id) REFERENCES Tweets (id)
-    )`);
-
-    db.run(`CREATE TABLE Replies (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      tweet_id INTEGER NOT NULL,
-      content TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES Users (id),
-      FOREIGN KEY (tweet_id) REFERENCES Tweets (id)
-    )`);
+    connectToDatabase().catch(console.error);
 
     export default db;
