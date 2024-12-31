@@ -4,6 +4,7 @@ const express = require('express');
     const session = require('express-session');
     const app = express();
     const port = 3000;
+    const logger = require('./src/utils/logger');
 
     // Initialize SQLite database
     const db = new sqlite3.Database(':memory:');
@@ -45,8 +46,10 @@ const express = require('express');
 
       db.run('INSERT INTO Users (Username, Email, Password, DateCreated) VALUES (?, ?, ?, ?)', [username, email, password, dateCreated], function(err) {
         if (err) {
+          logger.error(`Registration error: ${err.message}`);
           return res.status(400).json({ error: err.message });
         }
+        logger.info('User registered successfully');
         res.json({ message: 'User registered successfully' });
       });
     });
@@ -57,12 +60,15 @@ const express = require('express');
 
       db.get('SELECT * FROM Users WHERE Email = ? AND Password = ?', [email, password], (err, row) => {
         if (err) {
+          logger.error(`Login error: ${err.message}`);
           return res.status(400).json({ error: err.message });
         }
         if (row) {
           req.session.user = row;
+          logger.info('Login successful');
           res.json({ message: 'Login successful', user: row });
         } else {
+          logger.warn('Invalid credentials');
           res.status(400).json({ error: 'Invalid credentials' });
         }
       });
@@ -72,9 +78,11 @@ const express = require('express');
     app.get('/users', authMiddleware, (req, res) => {
       db.all("SELECT UserID AS id, Username, Email, DateCreated, Bio, ProfilePicture, FollowersCount, FollowingCount FROM Users", [], (err, rows) => {
         if (err) {
+          logger.error(`Error fetching users: ${err.message}`);
           res.status(400).json({ error: err.message });
           return;
         }
+        logger.info('Users fetched successfully');
         res.json({
           message: "success",
           data: rows
@@ -83,5 +91,5 @@ const express = require('express');
     });
 
     app.listen(port, () => {
-      console.log(`Server running at http://localhost:${port}`);
+      logger.info(`Server running at http://localhost:${port}`);
     });

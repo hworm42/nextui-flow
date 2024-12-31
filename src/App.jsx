@@ -13,11 +13,14 @@ import React from 'react';
     import LoginPage from './pages/LoginPage.jsx';
     import RegisterPage from './pages/RegisterPage.jsx';
     import ProtectedRoute from './components/ProtectedRoute.jsx';
+    import logger from './utils/logger';
 
-    const App = () => {
+    const App = ({ toggleTheme }) => {
+      logger.debug('App component rendered');
+
       return (
         <div>
-          <Header />
+          <Header toggleTheme={toggleTheme} />
           <div style={{ display: 'flex' }}>
             <main style={{ flex: 1, padding: '1rem' }}>
               <Routes>
