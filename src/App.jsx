@@ -11,6 +11,9 @@ import React from 'react';
     import Navbar from './components/Navbar.jsx';
     import Header from './components/Header.jsx';
     import Footer from './components/Footer.jsx';
+    import LoginPage from './pages/LoginPage.jsx';
+    import RegisterPage from './pages/RegisterPage.jsx';
+    import ProtectedRoute from './components/ProtectedRoute.jsx';
 
     const App = () => {
       return (
@@ -20,14 +23,72 @@ import React from 'react';
             <Navbar />
             <main style={{ flex: 1, padding: '1rem' }}>
               <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/explore" element={<ExplorePage />} />
-                <Route path="/notifications" element={<NotificationsPage />} />
-                <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/profile/:username" element={<ProfilePage />} />
-                <Route path="/settings/account" element={<SettingsPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/help" element={<HelpPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <HomePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/explore"
+                  element={
+                    <ProtectedRoute>
+                      <ExplorePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/notifications"
+                  element={
+                    <ProtectedRoute>
+                      <NotificationsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/messages"
+                  element={
+                    <ProtectedRoute>
+                      <MessagesPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile/:username"
+                  element={
+                    <ProtectedRoute>
+                      <ProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/settings/account"
+                  element={
+                    <ProtectedRoute>
+                      <SettingsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/search"
+                  element={
+                    <ProtectedRoute>
+                      <SearchPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/help"
+                  element={
+                    <ProtectedRoute>
+                      <HelpPage />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </main>
           </div>
