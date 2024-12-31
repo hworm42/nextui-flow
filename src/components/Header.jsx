@@ -12,6 +12,10 @@ import React from 'react';
         logger.debug('Theme toggled');
       };
 
+      React.useEffect(() => {
+        setDarkMode(localStorage.getItem('theme') === 'dark');
+      }, [toggleTheme]);
+
       return (
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(255, 255, 255, 0.2)' }}>
           <div>
