@@ -1,17 +1,17 @@
 import React from 'react';
     import { Card, Text } from '@nextui-org/react';
 
-    const HomePage = () => {
+    const NotificationsPage = () => {
       return (
         <div>
-          <h1>Home Page</h1>
+          <h1>Notifications Page</h1>
           <Card>
             <Card.Body>
-              <Text>Welcome to the home page!</Text>
+              <Text>See your latest notifications and interactions.</Text>
             </Card.Body>
           </Card>
         </div>
       );
     };
 
-    export default HomePage;
+    export default NotificationsPage;
