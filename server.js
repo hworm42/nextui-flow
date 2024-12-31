@@ -1,11 +1,11 @@
-const express = require('express');
-    const sqlite3 = require('sqlite').verbose();
-    const bodyParser = require('body-parser');
-    const session = require('express-session');
+import express from 'express';
+    import bodyParser from 'body-parser';
+    import session from 'express-session';
+    import logger from './src/utils/logger';
+    import db from './db';
+
     const app = express();
     const port = 3000;
-    const logger = require('./src/utils/logger');
-    const db = require('./db');
 
     app.use(bodyParser.json());
     app.use(session({
