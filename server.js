@@ -131,6 +131,18 @@ import express from 'express';
       }
     });
 
+    // API endpoint to get tweets
+    app.get('/tweets', async (req, res) => {
+      try {
+        const tweets = await db.collection('tweets').find({}).toArray();
+        logger.info('Tweets fetched successfully');
+        res.json({ message: 'success', data: tweets });
+      } catch (err) {
+        logger.error(`Error fetching tweets: ${err.message}`);
+        res.status(400).json({ error: err.message });
+      }
+    });
+
     app.listen(port, () => {
       logger.info(`Server running at http://localhost:${port}`);
     });

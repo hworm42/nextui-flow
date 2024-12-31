@@ -1,15 +1,16 @@
 import React from 'react';
     import { Card, Text } from '@nextui-org/react';
 
-    const Feed = () => {
+    const Feed = ({ tweets }) => {
       return (
         <div style={{ flex: 1, padding: '1rem' }}>
-          <Card>
-            <Card.Body>
-              <Text>Welcome to the feed!</Text>
-            </Card.Body>
-          </Card>
-          {/* Add more feed items here */}
+          {tweets.map((tweet) => (
+            <Card key={tweet._id} style={{ marginBottom: '1rem' }}>
+              <Card.Body>
+                <Text>{tweet.content}</Text>
+              </Card.Body>
+            </Card>
+          ))}
         </div>
       );
     };

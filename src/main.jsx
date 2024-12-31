@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
     import ReactDOM from 'react-dom';
     import App from './App.jsx';
     import { NextUIProvider, createTheme } from '@nextui-org/react';
@@ -26,16 +26,16 @@ import React, { useState, useEffect } from 'react';
     });
 
     const ThemeProvider = ({ children }) => {
-      const [isDark, setIsDark] = useState(true); // Set dark theme by default
+      const [isDark, setIsDark] = React.useState(true); // Set dark theme by default
 
-      useEffect(() => {
+      React.useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
           setIsDark(savedTheme === 'dark');
         }
       }, []);
 
-      useEffect(() => {
+      React.useEffect(() => {
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
       }, [isDark]);
 

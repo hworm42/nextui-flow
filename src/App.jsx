@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
     import { Routes, Route } from 'react-router-dom';
     import HomePage from './pages/HomePage.jsx';
     import ExplorePage from './pages/ExplorePage.jsx';
@@ -18,16 +18,32 @@ import React from 'react';
     import Feed from './components/Feed.jsx';
     import Sidebar from './components/Sidebar.jsx';
 
-    const App = ({ toggleTheme }) => {
+    const App = () => {
+      const [tweets, setTweets] = useState([]);
+
+      useEffect(() => {
+        const fetchTweets = async () => {
+          try {
+            const response = await fetch('/tweets');
+            const data = await response.json();
+            setTweets(data.data);
+          } catch (error) {
+            logger.error(`Error fetching tweets: ${error.message}`);
+          }
+        };
+
+        fetchTweets();
+      }, []);
+
       logger.debug('App component rendered');
 
       return (
         <div>
-          <Header toggleTheme={toggleTheme} />
+          <Header />
           <div style={{ display: 'flex' }}>
             <Navbar />
             <main style={{ flex: 1, display: 'flex' }}>
-              <Feed />
+              <Feed tweets={tweets} />
               <Sidebar />
             </main>
           </div>
