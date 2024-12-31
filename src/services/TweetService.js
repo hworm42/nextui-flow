@@ -1,18 +1,26 @@
-import logger from '../utils/logger';
-    import { getDb } from '../../db.js';
+import db from '../../db.js';
+import logger from '../utils/logger.js';
 
-    class TweetService {
-      async getTweets() {
-        try {
-          const db = await getDb();
-          const user = JSON.parse(sessionStorage.getItem('user'));
-          const tweets = await db.collection('tweets').find({ user_id: user._id }).toArray();
-          return tweets;
-        } catch (error) {
-          logger.error(`Error fetching tweets: ${error.message}`);
-          throw error;
-        }
-      }
+class TweetService {
+  async addTweet(tweet) {
+    try {
+      const result = await db.addTweet(tweet);
+      return result;
+    } catch (error) {
+      logger.error(`Error adding tweet: ${error.message}`);
+      throw error;
     }
+  }
 
-    export default new TweetService();
+  async findTweetsByUserId(userId) {
+    try {
+      const tweets = await db.findTweetsByUserId(userId);
+      return tweets;
+    } catch (error) {
+      logger.error(`Error finding tweets by user ID: ${error.message}`);
+      throw error;
+    }
+  }
+}
+
+export default new TweetService();

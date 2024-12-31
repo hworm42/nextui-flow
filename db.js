@@ -1,45 +1,62 @@
-import logger from './src/utils/logger';
+import { openDB } from 'idb';
+import logger from './src/utils/logger.js';
 
-    let db;
-    let client;
-    let ObjectId;
+class Database {
+  constructor() {
+    this.dbPromise = openDB('twitter_mvp', 1, {
+      upgrade(db) {
+        db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+        db.createObjectStore('tweets', { keyPath: 'id', autoIncrement: true });
+      },
+    });
+    logger.info('Connected to idb');
+  }
 
-    const connectToDatabase = async () => {
-      const { MongoClient, ObjectId: MongoObjectId } = await import('mongodb');
-      ObjectId = MongoObjectId;
+  async addUser(user) {
+    const db = await this.dbPromise;
+    const tx = db.transaction('users', 'readwrite');
+    const store = tx.objectStore('users');
+    const result = await store.add(user);
+    await tx.complete;
+    return result;
+  }
 
-      const uri = 'mongodb://admin:password@localhost:27017';
-      client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  async findUserByEmail(email) {
+    const db = await this.dbPromise;
+    const tx = db.transaction('users', 'readonly');
+    const store = tx.objectStore('users');
+    const result = await store.getAll();
+    await tx.complete;
+    return result.find(u => u.email === email);
+  }
 
-      try {
-        await client.connect();
-        db = client.db('twitter_mvp');
+  async findUserById(id) {
+    const db = await this.dbPromise;
+    const tx = db.transaction('users', 'readonly');
+    const store = tx.objectStore('users');
+    const result = await store.get(id);
+    await tx.complete;
+    return result;
+  }
 
-        await db.command({ ping: 1 });
-        logger.info('Connected to MongoDB');
+  async addTweet(tweet) {
+    const db = await this.dbPromise;
+    const tx = db.transaction('tweets', 'readwrite');
+    const store = tx.objectStore('tweets');
+    const result = await store.add(tweet);
+    await tx.complete;
+    return result;
+  }
 
-        await db.createCollection('users');
-        await db.createCollection('tweets');
+  async findTweetsByUserId(userId) {
+    const db = await this.dbPromise;
+    const tx = db.transaction('tweets', 'readonly');
+    const store = tx.objectStore('tweets');
+    const result = await store.getAll();
+    await tx.complete;
+    return result.filter(tweet => tweet.user_id === userId);
+  }
+}
 
-        logger.info('Collections created');
-      } catch (err) {
-        logger.error(`Database connection error: ${err.message}`);
-        throw err;
-      }
-    };
-
-    const getDb = async () => {
-      if (!db) {
-        await connectToDatabase();
-      }
-      return db;
-    };
-
-    const getObjectId = async () => {
-      if (!ObjectId) {
-        await connectToDatabase();
-      }
-      return ObjectId;
-    };
-
-    export { getDb, getObjectId };
+const db = new Database();
+export default db;

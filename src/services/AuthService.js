@@ -1,52 +1,45 @@
-import logger from '../utils/logger';
-    import { getDb } from '../../db.js';
+import logger from '../utils/logger.js';
 
-    class AuthService {
-      async register(username, email, password) {
-        try {
-          const db = await getDb();
-          const result = await db.collection('users').insertOne({ username, email, password_hash: password, created_at: new Date().toISOString(), role: 'user' });
-          if (!result.acknowledged) {
-            throw new Error('Registration failed');
-          }
-          return { ok: true };
-        } catch (error) {
-          logger.error(`Registration error: ${error.message}`);
-          throw error;
-        }
+class AuthService {
+  async register(username, email, password) {
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, role: 'user' }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Registration failed');
       }
-
-      async login(email, password) {
-        try {
-          const db = await getDb();
-          const user = await db.collection('users').findOne({ email, password_hash: password });
-          if (user) {
-            sessionStorage.setItem('user', JSON.stringify(user));
-            return { ok: true };
-          } else {
-            throw new Error('Invalid credentials');
-          }
-        } catch (error) {
-          logger.error(`Login error: ${error.message}`);
-          throw error;
-        }
-      }
-
-      async forgotPassword(email) {
-        try {
-          const db = await getDb();
-          const user = await db.collection('users').findOne({ email });
-          if (user) {
-            // Send password reset instructions
-            return { ok: true };
-          } else {
-            throw new Error('Email not found');
-          }
-        } catch (error) {
-          logger.error(`Forgot password error: ${error.message}`);
-          throw error;
-        }
-      }
+      return response;
+    } catch (error) {
+      logger.error(`Registration error: ${error.message}`);
+      throw error;
     }
+  }
 
-    export default new AuthService();
+  async login(email, password) {
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Login failed');
+      }
+      return response;
+    } catch (error) {
+      logger.error(`Login error: ${error.message}`);
+      throw error;
+    }
+  }
+}
+
+export default new AuthService();

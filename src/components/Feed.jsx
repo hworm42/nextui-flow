@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Text } from '@nextui-org/react';
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 import TweetService from '../services/TweetService.js';
 
 const Feed = () => {
@@ -26,7 +26,7 @@ const Feed = () => {
         <Text>No tweets available.</Text>
       ) : (
         tweets.map((tweet) => (
-          <Card key={tweet.id} style={{ marginBottom: '1rem' }}>
+          <Card key={tweet._id} style={{ marginBottom: '1rem' }}>
             <Card.Body>
               <Text>{tweet.content}</Text>
             </Card.Body>

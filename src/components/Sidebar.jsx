@@ -9,7 +9,6 @@ const Sidebar = () => {
           <Text>Sidebar content goes here.</Text>
         </Card.Body>
       </Card>
-      {/* Add more sidebar items here */}
     </div>
   );
 };

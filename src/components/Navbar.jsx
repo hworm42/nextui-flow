@@ -23,26 +23,8 @@ const Navbar = ({ toggleTheme }) => {
       <Link to="/" style={{ marginBottom: '1rem' }}>
         <Text>Home</Text>
       </Link>
-      <Link to="/explore" style={{ marginBottom: '1rem' }}>
-        <Text>Explore</Text>
-      </Link>
-      <Link to="/notifications" style={{ marginBottom: '1rem' }}>
-        <Text>Notifications</Text>
-      </Link>
-      <Link to="/messages" style={{ marginBottom: '1rem' }}>
-        <Text>Messages</Text>
-      </Link>
-      <Link to="/profile/username" style={{ marginBottom: '1rem' }}>
-        <Text>Profile</Text>
-      </Link>
-      <Link to="/settings/account" style={{ marginBottom: '1rem' }}>
-        <Text>Settings</Text>
-      </Link>
-      <Link to="/search" style={{ marginBottom: '1rem' }}>
-        <Text>Search</Text>
-      </Link>
-      <Link to="/help" style={{ marginBottom: '1rem' }}>
-        <Text>Help</Text>
+      <Link to="/feed" style={{ marginBottom: '1rem' }}>
+        <Text>Feed</Text>
       </Link>
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center' }}>
         <Switch
