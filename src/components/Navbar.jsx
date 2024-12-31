@@ -4,7 +4,7 @@ import React from 'react';
 
     const Navbar = () => {
       return (
-        <nav style={{ display: 'flex', flexDirection: 'column', padding: '1rem', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderRight: '1px solid rgba(255, 255, 255, 0.2)' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', padding: '1rem', background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', borderRight: '1px solid rgba(255, 255, 255, 0.2)', width: '200px' }}>
           <Link to="/" style={{ marginBottom: '1rem' }}>
             <Text>Home</Text>
           </Link>

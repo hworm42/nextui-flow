@@ -37,9 +37,9 @@ import db from './db.js';
 
       // Insert demo login user
       const demoUser = {
-        username: 'demouser',
+        username: 'demor',
         email: 'demo@example.com',
-        password_hash: 'demopassword', 
+        password_hash: 'demo',
         created_at: new Date().toISOString(),
         role: 'user'
       };

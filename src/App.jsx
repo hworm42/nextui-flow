@@ -14,6 +14,9 @@ import React from 'react';
     import RegisterPage from './pages/RegisterPage.jsx';
     import ProtectedRoute from './components/ProtectedRoute.jsx';
     import logger from './utils/logger';
+    import Navbar from './components/Navbar.jsx';
+    import Feed from './components/Feed.jsx';
+    import Sidebar from './components/Sidebar.jsx';
 
     const App = ({ toggleTheme }) => {
       logger.debug('App component rendered');
@@ -22,75 +25,10 @@ import React from 'react';
         <div>
           <Header toggleTheme={toggleTheme} />
           <div style={{ display: 'flex' }}>
-            <main style={{ flex: 1, padding: '1rem' }}>
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <HomePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/explore"
-                  element={
-                    <ProtectedRoute>
-                      <ExplorePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/notifications"
-                  element={
-                    <ProtectedRoute>
-                      <NotificationsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/messages"
-                  element={
-                    <ProtectedRoute>
-                      <MessagesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile/:username"
-                  element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/settings/account"
-                  element={
-                    <ProtectedRoute>
-                      <SettingsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/search"
-                  element={
-                    <ProtectedRoute>
-                      <SearchPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/help"
-                  element={
-                    <ProtectedRoute>
-                      <HelpPage />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+            <Navbar />
+            <main style={{ flex: 1, display: 'flex' }}>
+              <Feed />
+              <Sidebar />
             </main>
           </div>
           <Footer />
