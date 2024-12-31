@@ -34,6 +34,16 @@ import db from './db.js';
         replies.push({ user_id, tweet_id, content, created_at });
       }
       await db.collection('replies').insertMany(replies);
+
+      // Insert demo login user
+      const demoUser = {
+        username: 'demouser',
+        email: 'demo@example.com',
+        password_hash: 'demopassword', 
+        created_at: new Date().toISOString(),
+        role: 'user'
+      };
+      await db.collection('users').insertOne(demoUser);
     };
 
     insertSampleData().catch(console.error);
