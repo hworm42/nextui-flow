@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Input, Button, Text } from '@nextui-org/react';
+import { Input, Button, Text, Link } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService.js';
+import '../styles/formStyles.css';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -26,31 +27,39 @@ const RegisterPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '1rem', maxWidth: '400px', margin: '0 auto' }}>
       <Text h2>Register</Text>
       <Input
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        style={{ marginBottom: '1rem' }}
+        className="form-input"
       />
       <Input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        style={{ marginBottom: '1rem' }}
+        className="form-input"
       />
       <Input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        style={{ marginBottom: '1rem' }}
+        className="form-input"
       />
-      <Button onClick={handleRegister}>Register</Button>
-      {error && <Text color="error">{error}</Text>}
+      <Button onClick={handleRegister} className="form-button">
+        Register
+      </Button>
+      {error && <Text className="form-error">{error}</Text>}
+      <Text className="form-link">
+        Already have an account? <Link href="/login">Login</Link>
+      </Text>
+      <Text className="form-link">
+        Forgot your password? <Link href="/forgot-password">Forgot Password</Link>
+      </Text>
     </div>
   );
 };

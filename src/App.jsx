@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import WelcomePage from './pages/WelcomePage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
 import logger from './utils/logger';
 import Navbar from './components/Navbar.jsx';
 import Feed from './components/Feed.jsx';
@@ -57,6 +58,7 @@ const App = ({ toggleTheme }) => {
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
             <Route path="/help" element={<ProtectedRoute><HelpPage /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>

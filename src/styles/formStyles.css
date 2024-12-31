@@ -1,0 +1,22 @@
+.form-input {
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.form-button {
+  width: 100%;
+}
+
+.form-error {
+  margin-top: 1rem;
+  color: red;
+}
+
+.form-success {
+  margin-top: 1rem;
+  color: green;
+}
+
+.form-link {
+  margin-top: 1rem;
+}
