@@ -8,7 +8,6 @@ import React from 'react';
     import SettingsPage from './pages/SettingsPage.jsx';
     import SearchPage from './pages/SearchPage.jsx';
     import HelpPage from './pages/HelpPage.jsx';
-    import Navbar from './components/Navbar.jsx';
     import Header from './components/Header.jsx';
     import Footer from './components/Footer.jsx';
     import LoginPage from './pages/LoginPage.jsx';
@@ -20,7 +19,6 @@ import React from 'react';
         <div>
           <Header />
           <div style={{ display: 'flex' }}>
-            <Navbar />
             <main style={{ flex: 1, padding: '1rem' }}>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
