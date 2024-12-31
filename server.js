@@ -2,7 +2,7 @@ import express from 'express';
     import bodyParser from 'body-parser';
     import session from 'express-session';
     import logger from './src/utils/logger';
-    import db from './db.js';
+    import { getDb, getObjectId } from './db.js';
 
     const app = express();
     const port = 3000;
@@ -47,12 +47,13 @@ import express from 'express';
       const created_at = new Date().toISOString();
 
       try {
-        const result = await db.run('INSERT INTO users (username, email, password_hash, created_at, role) VALUES (?, ?, ?, ?, ?)', username, email, password, created_at, role);
+        const db = await getDb();
+        const result = await db.collection('users').insertOne({ username, email, password_hash: password, created_at, role });
         logger.info('User registered successfully');
-        res.json({ message: 'User registered successfully', userId: result.lastID });
+        res.json({ message: 'User registered successfully', userId: result.insertedId });
       } catch (err) {
         logger.error(`Registration error: ${err.message}`);
-        if (err.code === 'SQLITE_CONSTRAINT') {
+        if (err.code === 11000) {
           res.status(409).json({ error: 'Email already exists' });
         } else {
           res.status(500).json({ error: 'Internal Server Error' });
@@ -65,7 +66,8 @@ import express from 'express';
       const { email, password } = req.body;
 
       try {
-        const user = await db.get('SELECT * FROM users WHERE email = ? AND password_hash = ?', email, password);
+        const db = await getDb();
+        const user = await db.collection('users').findOne({ email, password_hash: password });
         if (user) {
           req.session.user = user;
           logger.info('Login successful');
@@ -83,7 +85,8 @@ import express from 'express';
     // API endpoint to get users (protected)
     app.get('/api/users', authMiddleware, async (req, res) => {
       try {
-        const users = await db.all('SELECT username, email, created_at, role FROM users');
+        const db = await getDb();
+        const users = await db.collection('users').find({}, { projection: { username: 1, email: 1, created_at: 1, role: 1 } }).toArray();
         logger.info('Users fetched successfully');
         res.json({ message: 'success', data: users });
       } catch (err) {
@@ -97,8 +100,10 @@ import express from 'express';
       const { id } = req.params;
 
       try {
-        const result = await db.run('DELETE FROM users WHERE id = ?', id);
-        if (result.changes === 1) {
+        const db = await getDb();
+        const ObjectId = await getObjectId();
+        const result = await db.collection('users').deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 1) {
           logger.info('User deleted successfully');
           res.json({ message: 'User deleted successfully' });
         } else {
@@ -115,8 +120,10 @@ import express from 'express';
       const { id } = req.params;
 
       try {
-        const result = await db.run('DELETE FROM tweets WHERE id = ?', id);
-        if (result.changes === 1) {
+        const db = await getDb();
+        const ObjectId = await getObjectId();
+        const result = await db.collection('tweets').deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 1) {
           logger.info('Tweet deleted successfully');
           res.json({ message: 'Tweet deleted successfully' });
         } else {
@@ -130,10 +137,11 @@ import express from 'express';
 
     // API endpoint to get tweets for a logged-in user
     app.get('/api/tweets', authMiddleware, async (req, res) => {
-      const userId = req.session.user.id;
+      const userId = req.session.user._id;
 
       try {
-        const tweets = await db.all('SELECT * FROM tweets WHERE user_id = ?', userId);
+        const db = await getDb();
+        const tweets = await db.collection('tweets').find({ user_id: userId }).toArray();
         logger.info('Tweets fetched successfully');
         res.json({ message: 'success', data: tweets });
       } catch (err) {
@@ -145,8 +153,12 @@ import express from 'express';
     // API endpoint to debug database
     app.post('/api/debug', async (req, res) => {
       try {
+        const db = await getDb();
         // Example: Check for duplicate emails
-        const duplicateEmails = await db.all('SELECT email FROM users GROUP BY email HAVING COUNT(email) > 1');
+        const duplicateEmails = await db.collection('users').aggregate([
+          { $group: { _id: "$email", count: { $sum: 1 } } },
+          { $match: { count: { $gt: 1 } } }
+        ]).toArray();
         if (duplicateEmails.length > 0) {
           logger.warn('Duplicate emails found:', duplicateEmails);
           res.json({ message: 'Duplicate emails found', data: duplicateEmails });
