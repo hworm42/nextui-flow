@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-    import logger from '../src/utils/logger';
+    import logger from '../src/utils/logger.js';
 
     const BASE_URL = 'http://localhost:3000/api';
 
@@ -24,6 +24,12 @@ import fetch from 'node-fetch';
         method: 'POST',
         body: { email: 'test@example.com', password: 'wrongpassword' },
         expectedStatus: 401,
+      },
+      {
+        name: 'Database Debugging',
+        endpoint: '/debug',
+        method: 'POST',
+        expectedStatus: 200,
       },
     ];
 
