@@ -5,23 +5,7 @@ const express = require('express');
     const app = express();
     const port = 3000;
     const logger = require('./src/utils/logger');
-
-    // Initialize SQLite database
-    const db = new sqlite3.Database(':memory:');
-
-    db.serialize(() => {
-      db.run(`CREATE TABLE Users (
-        UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-        Username TEXT NOT NULL,
-        Email TEXT NOT NULL,
-        Password TEXT NOT NULL,
-        DateCreated TEXT NOT NULL,
-        Bio TEXT,
-        ProfilePicture TEXT,
-        FollowersCount INTEGER DEFAULT 0,
-        FollowingCount INTEGER DEFAULT 0
-      )`);
-    });
+    const db = require('./db');
 
     app.use(bodyParser.json());
     app.use(session({
@@ -39,12 +23,30 @@ const express = require('express');
       }
     };
 
+    // Middleware to check admin role
+    const adminMiddleware = (req, res, next) => {
+      if (req.session.user && req.session.user.role === 'admin') {
+        next();
+      } else {
+        res.status(403).json({ error: 'Forbidden' });
+      }
+    };
+
+    // Middleware to check moderator role
+    const moderatorMiddleware = (req, res, next) => {
+      if (req.session.user && (req.session.user.role === 'moderator' || req.session.user.role === 'admin')) {
+        next();
+      } else {
+        res.status(403).json({ error: 'Forbidden' });
+      }
+    };
+
     // API endpoint to register a new user
     app.post('/api/register', (req, res) => {
-      const { username, email, password } = req.body;
-      const dateCreated = new Date().toISOString();
+      const { username, email, password, role } = req.body;
+      const created_at = new Date().toISOString();
 
-      db.run('INSERT INTO Users (Username, Email, Password, DateCreated) VALUES (?, ?, ?, ?)', [username, email, password, dateCreated], function(err) {
+      db.run('INSERT INTO Users (username, email, password_hash, created_at, role) VALUES (?, ?, ?, ?, ?)', [username, email, password, created_at, role], function(err) {
         if (err) {
           logger.error(`Registration error: ${err.message}`);
           return res.status(400).json({ error: err.message });
@@ -58,7 +60,7 @@ const express = require('express');
     app.post('/api/login', (req, res) => {
       const { email, password } = req.body;
 
-      db.get('SELECT * FROM Users WHERE Email = ? AND Password = ?', [email, password], (err, row) => {
+      db.get('SELECT * FROM Users WHERE email = ? AND password_hash = ?', [email, password], (err, row) => {
         if (err) {
           logger.error(`Login error: ${err.message}`);
           return res.status(400).json({ error: err.message });
@@ -76,7 +78,7 @@ const express = require('express');
 
     // API endpoint to get users (protected)
     app.get('/users', authMiddleware, (req, res) => {
-      db.all("SELECT UserID AS id, Username, Email, DateCreated, Bio, ProfilePicture, FollowersCount, FollowingCount FROM Users", [], (err, rows) => {
+      db.all("SELECT id, username, email, created_at, role FROM Users", [], (err, rows) => {
         if (err) {
           logger.error(`Error fetching users: ${err.message}`);
           res.status(400).json({ error: err.message });
@@ -87,6 +89,34 @@ const express = require('express');
           message: "success",
           data: rows
         });
+      });
+    });
+
+    // API endpoint to delete a user (admin only)
+    app.delete('/users/:id', adminMiddleware, (req, res) => {
+      const { id } = req.params;
+
+      db.run('DELETE FROM Users WHERE id = ?', id, function(err) {
+        if (err) {
+          logger.error(`Error deleting user: ${err.message}`);
+          return res.status(400).json({ error: err.message });
+        }
+        logger.info('User deleted successfully');
+        res.json({ message: 'User deleted successfully' });
+      });
+    });
+
+    // API endpoint to delete a tweet (moderator or admin only)
+    app.delete('/tweets/:id', moderatorMiddleware, (req, res) => {
+      const { id } = req.params;
+
+      db.run('DELETE FROM Tweets WHERE id = ?', id, function(err) {
+        if (err) {
+          logger.error(`Error deleting tweet: ${err.message}`);
+          return res.status(400).json({ error: err.message });
+        }
+        logger.info('Tweet deleted successfully');
+        res.json({ message: 'Tweet deleted successfully' });
       });
     });
 
