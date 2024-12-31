@@ -17,6 +17,7 @@ import logger from './utils/logger';
 import Navbar from './components/Navbar.jsx';
 import Feed from './components/Feed.jsx';
 import Sidebar from './components/Sidebar.jsx';
+import TweetService from './services/TweetService.js';
 
 const App = ({ toggleTheme }) => {
   const [tweets, setTweets] = useState([]);
@@ -25,9 +26,8 @@ const App = ({ toggleTheme }) => {
   useEffect(() => {
     const fetchTweets = async () => {
       try {
-        const response = await fetch('/api/tweets');
-        const data = await response.json();
-        setTweets(data.data);
+        const data = await TweetService.getTweets();
+        setTweets(data);
       } catch (error) {
         logger.error(`Error fetching tweets: ${error.message}`);
       }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input, Button, Text } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
+import AuthService from '../services/AuthService.js';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -8,13 +9,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    const response = await AuthService.login(email, password);
 
     if (response.ok) {
       navigate('/feed');

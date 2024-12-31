@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Text } from '@nextui-org/react';
 import logger from '../utils/logger';
+import TweetService from '../services/TweetService.js';
 
 const Feed = () => {
   const [tweets, setTweets] = useState([]);
@@ -8,10 +9,9 @@ const Feed = () => {
   useEffect(() => {
     const fetchTweets = async () => {
       try {
-        const response = await fetch('/api/tweets');
-        const data = await response.json();
+        const data = await TweetService.getTweets();
         logger.debug('Fetched tweets:', data);
-        setTweets(data.data);
+        setTweets(data);
       } catch (error) {
         logger.error(`Error fetching tweets: ${error.message}`);
       }

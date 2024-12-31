@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input, Button, Text } from '@nextui-org/react';
 import { useNavigate } from 'react-router-dom';
+import AuthService from '../services/AuthService.js';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -11,13 +12,7 @@ const RegisterPage = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password, role: 'user' }),
-      });
+      const response = await AuthService.register(username, email, password);
 
       if (response.ok) {
         navigate('/login');
