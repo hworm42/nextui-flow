@@ -1,0 +1,22 @@
+{
+      "name": "flow",
+      "version": "1.0.0",
+      "description": "Twitter MVP using NextUI",
+      "main": "index.js",
+      "scripts": {
+        "dev": "vite",
+        "start": "node server.js"
+      },
+      "dependencies": {
+        "@nextui-org/react": "^1.0.0-beta.13",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.10.0",
+        "sqlite": "^4.0.0",
+        "sqlite3": "^5.0.0",
+        "express": "^4.18.2"
+      },
+      "devDependencies": {
+        "vite": "^4.2.0"
+      }
+    }
